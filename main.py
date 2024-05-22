@@ -57,6 +57,7 @@ def get_args():
     parser.add_argument('--l1-reg', type=float, default=None)
     parser.add_argument('--precision', type=int, default=None)
     parser.add_argument('--no-eval', action='store_true', default=False)
+    parser.add_argument('--ckpt-path', type=str, default=None)
     return parser.parse_args()
 
 def make_dataloaders():
@@ -183,7 +184,7 @@ def main():
 
     ## configure the logger
     save_dir = 'logs/'
-    log_name = f'{args.dataset}-{args.unlearn_mode}-{args.cl_alg}-{args.num_unlearn_samples}-seed={args.seed}-lr={args.cl_lr}-alpha={args.alpha}' 
+    log_name = f'{args.dataset}-{args.unlearn_mode}-{args.cl_alg}-{args.num_unlearn_samples}-seed={args.seed}-lr={args.cl_lr}-alpha={args.alpha}-beta={args.beta}' 
     if not os.path.exists(save_dir):
         os.makedirs(save_dir)
     wandb_logger = WandbLogger(project=args.project, 
