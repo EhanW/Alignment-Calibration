@@ -6,7 +6,7 @@
 *.tar.gz
 *.JPEG
 *.png 
-
+check.sh
 *.txt 
 *.out
 
