@@ -12,7 +12,7 @@ from utils import get_indices, get_cl_augs, get_sl_augs, get_test_augs, cls_test
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--project', '-p', type=str, default='conul')
+    parser.add_argument('--project', '-p', type=str, default='alignment-calibration')
     parser.add_argument('--log-model', '-l', action='store_true')    
     parser.add_argument('--unlearn-mode', '-m', default='pt')
     parser.add_argument('--num-unlearn-samples', '-n', default=0)

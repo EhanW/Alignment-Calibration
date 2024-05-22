@@ -17,14 +17,14 @@ from utils import get_indices, get_cl_augs, get_sl_augs, get_test_augs, cls_test
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--unlearn-mode', '-m', required=True, choices=['ft', 'ga', 'hiding', 'rt', 'ng'])
+    parser.add_argument('--unlearn-mode', '-m', required=True, choices=['ft', 'ga', 'hiding', 'rt', 'ng', 'l1'])
     parser.add_argument('--num-unlearn-samples', '-n', type=int, default=4500)
-    parser.add_argument('--project', '-p', type=str, default='conul')
+    parser.add_argument('--project', '-p', type=str, default='alignment-calibration')
     parser.add_argument('--log-model', '-l', action='store_true')    
     parser.add_argument('--backbone', '-b', default='resnet18', choices=['resnet18', 'resnet50']) 
 
     parser.add_argument('--cl-alg', '-a', choices=['simclr', 'moco'], default='moco')
-    parser.add_argument('--cl-epochs', type=int, default=40)
+    parser.add_argument('--cl-epochs', type=int, default=10)
     parser.add_argument('--cl-lr', type=float, default=0.06)
     parser.add_argument('--cl-momentum', type=float, default=0.9)
     parser.add_argument('--cl-weight-decay', type=float, default=5e-4)
@@ -86,7 +86,7 @@ def make_dataloaders():
         train_extractor_dataset = DatasetTriad(
             root=args.data, train=True, pair=True, triad=False, transform=train_extractor_transforms, selected_indices=unlearn_indices)
         train_extractor_dataloader = DataLoader(train_extractor_dataset, batch_size=batch_size, shuffle=True, drop_last=True, num_workers=num_workers, pin_memory=True)
-    elif args.unlearn_mode in ['ft', 'rt']:
+    elif args.unlearn_mode in ['ft', 'rt', 'l1']:
         train_extractor_dataset = DatasetTriad(
             root=args.data, train=True, pair=True, triad=False, transform=train_extractor_transforms, selected_indices=retain_indices)
         train_extractor_dataloader = DataLoader(train_extractor_dataset, batch_size=batch_size, shuffle=True, drop_last=True, num_workers=num_workers, pin_memory=True)
@@ -133,14 +133,12 @@ def make_emia_features(model):
     feature_transforms = get_cl_augs(strength=1.0, size=args.size, imagenet=imagenet)
 
     ### Get the indices for the dataset
-    validation_indices, retain_indices, unlearn_indices = get_indices(
+    _, retain_indices, unlearn_indices = get_indices(
         seed=args.seed, num_total_samples=args.num_total_samples, num_unlearn_samples=args.num_unlearn_samples)
 
     ### Non-membership samples are 10000 test data
     ### To construct a balanced dataset, select 10000 samples for training the membership classifier
     membership_indices = retain_indices[:args.num_test_samples]
-    evaluation_membership_indices = retain_indices[args.num_test_samples:] ### membership samples
-    evaluation_validation_indices = validation_indices ### non-membership samples
     evaluation_unlearn_indices = unlearn_indices ### non-membership samples
     
     if args.dataset == 'cifar10':
@@ -164,25 +162,17 @@ def make_emia_features(model):
     train_features = OrderedDict(membership=train_membership_features, nonmembership=train_nonmembership_features)
 
     ### Dataloaders for evaluation 
-    evaluation_membership_dataset = DatasetTriad(
-        root=args.data, train=True, pair=False, triad=False, transform=feature_transforms, selected_indices=evaluation_membership_indices)
-    evaluation_validation_dataset = DatasetTriad(
-        root=args.data, train=True, pair=False, triad=False, transform=feature_transforms, selected_indices=evaluation_validation_indices)
     evaluation_unlearn_dataset = DatasetTriad(
         root=args.data, train=True, pair=False, triad=False, transform=feature_transforms, selected_indices=evaluation_unlearn_indices)
-    evaluation_membership_dataloader = DataLoader(evaluation_membership_dataset, batch_size=batch_size, shuffle=False, drop_last=False, num_workers=num_workers, pin_memory=True)
-    evaluation_validation_dataloader = DataLoader(evaluation_validation_dataset, batch_size=batch_size, shuffle=False, drop_last=False, num_workers=num_workers, pin_memory=True)
     evaluation_unlearn_dataloader = DataLoader(evaluation_unlearn_dataset, batch_size=batch_size, shuffle=False, drop_last=False, num_workers=num_workers, pin_memory=True)
-    evaluation_membership_features = get_membership_features(model=model, dataloader=evaluation_membership_dataloader, args=args)
-    evaluation_validation_features = get_membership_features(model=model, dataloader=evaluation_validation_dataloader, args=args)
     evaluation_unlearn_features = get_membership_features(model=model, dataloader=evaluation_unlearn_dataloader, args=args)
 
-    evaluation_features = OrderedDict(retain=evaluation_membership_features, validation=evaluation_validation_features, unlearn=evaluation_unlearn_features)
+    evaluation_features = OrderedDict(unlearn=evaluation_unlearn_features)
     return train_features, evaluation_features
 
 def main():
     ## make dataloaders and models
-    train_dataloaders, evaluation_dataloaders, train_svc_mia_dataloader = make_dataloaders()
+    train_dataloaders, evaluation_dataloaders, train_cmia_dataloader = make_dataloaders()
 
     if args.unlearn_mode == 'ga':
         negative_loss = True
@@ -216,9 +206,9 @@ def main():
                                )
     wandb_logger.watch(model, log="all")
     lr_monitor = LearningRateMonitor(logging_interval='epoch')
-    columns = ['metrics'] + list(evaluation_dataloaders.keys())
+    columns = ['EMIA', 'RA', 'TA', 'UA', "CMIA"]
     results = []
-    time_columns = ['unlearn_time', 'EMIA_time', 'cls_time', 'svc_mia_time']
+    time_columns = ['Unlearn_time', 'EMIA_time', 'Linear_probing_time', 'CMIA_time']
     time_results = []
 
     start_time = time()
@@ -230,70 +220,48 @@ def main():
     time_results.append(time() - start_time)
     start_time = time()
     if args.no_eval:
-        time_columns = ['unlearn_time']
+        time_columns = ['Unlearn_time']
         wandb_logger.log_text(key="time", columns=time_columns, data=[time_results])
         return
+    
     ## EncoderMI-Threshold
     emia_train_features, emia_evluation_features = make_emia_features(model)
     threshold = encodermi_threshold(
         features=np.concatenate([emia_train_features['membership'], emia_train_features['nonmembership']], axis=0),
         labels=np.concatenate([np.ones(emia_train_features['membership'].shape[0]), np.zeros(emia_train_features['nonmembership'].shape[0])])
     )
-    avg_aligment_results = ['avg_alignment']
-    EMIA_results = ['EMIA_acc']
-    for key in evaluation_dataloaders.keys():
-        if key == 'test':
-            avg_aligment_results.append(None)
-        else:
-            features = emia_evluation_features[key]
-            if features is None:
-                avg_aligment_results.append(None)
-            else:
-                avg_aligment_results.append(features.mean())
-    results.append(avg_aligment_results)
-    for key in evaluation_dataloaders.keys():
-        if key not in ['unlearn', 'retain']:
-            EMIA_results.append(None)
-        else:
-            features = emia_evluation_features[key]
-            if features is None:
-                EMIA_results.append(None)
-            else:
-                labels = np.zeros(features.shape[0]) if key == 'unlearn' else np.ones(features.shape[0])
-                EMIA_acc = encodermi_threshold_test(features=features, labels=labels, threshold=threshold)
-                EMIA_results.append(EMIA_acc)
-    results.append(EMIA_results)
+
+    features = emia_evluation_features['unlearn']
+    if features is None:
+        results.append(None)
+    else:
+        EMIA_acc = encodermi_threshold_test(features=features, labels=np.zeros(features.shape[0]), threshold=threshold)
+        results.append(EMIA_acc)
     time_results.append(time() - start_time)
     start_time = time()
 
     ## train the linear classifier
-    classifier = Classifier(model.backbone, args.fc_epochs, args.fc_lr, args.fc_momentum, args.num_classes, val_names=list(evaluation_dataloaders.keys()), feature_dim=args.feature_dim)
+    classifier = Classifier(backbone=model.backbone, max_epochs=args.fc_epochs, 
+                            lr=args.fc_lr, momentum=args.fc_momentum, num_classes=args.num_classes, val_names=list(evaluation_dataloaders.keys()),
+                            feature_dim=args.feature_dim)
     trainer = Trainer(max_epochs=args.fc_epochs, devices=[args.gpu_id], accelerator="gpu", 
                          logger=wandb_logger, callbacks=[lr_monitor], enable_checkpointing=args.enable_checkpointing)
     trainer.fit(classifier, train_dataloaders['train_classifier'], val_dataloaders=evaluation_dataloaders)
 
     ## evaluation by a linear classifier
-    cls_results = ['cls_acc']
-    for key, dataloader in evaluation_dataloaders.items():
-        cls_acc = cls_test(net=classifier, test_data_loader=dataloader, args=args)
-        cls_results.append(cls_acc)
-    results.append(cls_results)
-    time_results.append(time() - start_time)
-    start_time = time()
-    
-    ## SVC-MIA evaluation
-    svc_mia_results = ['svc_mia_acc']
-    for key, dataloader in evaluation_dataloaders.items():
-        if key != 'unlearn':
-            svc_mia_results.append(None)
-        else:
-            svc_mia_acc = SVC_MIA(model=classifier, shadow_train=train_svc_mia_dataloader, shadow_test=evaluation_dataloaders['test'], target_train=None, target_test=evaluation_dataloaders['unlearn'], args=args)
-            svc_mia_results.append(svc_mia_acc)
-    results.append(svc_mia_results)
+    for key in ['retain', 'test', 'unlearn']:
+        cls_acc = cls_test(net=classifier, test_data_loader=evaluation_dataloaders[key], args=args)
+        results.append(cls_acc)
     time_results.append(time() - start_time)
     start_time = time()
 
-    wandb_logger.log_text(key="evluation", columns=columns, data=results)
+    ## CMIA evaluation
+    CMIA_acc = SVC_MIA(model=classifier, shadow_train=train_cmia_dataloader, shadow_test=evaluation_dataloaders['test'], target_train=None, target_test=evaluation_dataloaders['unlearn'], args=args)
+    results.append(CMIA_acc)
+    time_results.append(time() - start_time)
+    start_time = time()
+    print(columns, results)
+    wandb_logger.log_text(key="evluation", columns=columns, data=[results])
     wandb_logger.log_text(key="time", columns=time_columns, data=[time_results])
 
 if __name__ == "__main__":
