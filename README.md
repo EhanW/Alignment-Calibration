@@ -41,7 +41,6 @@ python main.py \
     [--enable-checkpointing] \
     --cl-epochs 10 \
     --cl-lr ${LR} \
-    [--l1-reg ${L1_REG}] \
     --ckpt-path load_encoder_path.ckpt \
     --alpha ${ALPHA} \
     --beta ${BETA} \
