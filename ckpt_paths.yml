@@ -1,0 +1,161 @@
+pt:
+  cifar10:
+    moco:
+      0: /data/yhwang/projects/conul/logs/align-calibration/c6cv9o31/checkpoints/epoch=799-step=69600.ckpt
+      1: /data/yhwang/projects/conul/logs/align-calibration/092e1yri/checkpoints/epoch=799-step=69600.ckpt
+      2: /data/yhwang/projects/conul/logs/align-calibration/jdku7hm1/checkpoints/epoch=799-step=69600.ckpt
+      3: /data/yhwang/projects/conul/logs/align-calibration/2gah0c97/checkpoints/epoch=799-step=69600.ckpt
+      4: /data/yhwang/projects/conul/logs/align-calibration/vq7g67rj/checkpoints/epoch=799-step=69600.ckpt
+    mocov1:
+      0: /data/yhwang/projects/conul/logs/align-calibration/cm72h1x8/checkpoints/epoch=799-step=69600.ckpt
+      1: /data/yhwang/projects/conul/logs/align-calibration/man5qcx0/checkpoints/epoch=799-step=69600.ckpt
+      2: /data/yhwang/projects/conul/logs/align-calibration/4zzmmr5g/checkpoints/epoch=799-step=69600.ckpt
+      3: /data/yhwang/projects/conul/logs/align-calibration/20hm87if/checkpoints/epoch=799-step=69600.ckpt
+      4: /data/yhwang/projects/conul/logs/align-calibration/uvngyu1l/checkpoints/epoch=799-step=69600.ckpt
+    simclr:
+      0: /data/yhwang/projects/conul/logs/align-calibration/o4ddjuc2/checkpoints/epoch=799-step=69600.ckpt
+      1: /data/yhwang/projects/conul/logs/align-calibration/a7070fmz/checkpoints/epoch=799-step=69600.ckpt
+      2: /data/yhwang/projects/conul/logs/align-calibration/bqwswlp7/checkpoints/epoch=799-step=69600.ckpt
+      3: /data/yhwang/projects/conul/logs/align-calibration/so63g6wk/checkpoints/epoch=799-step=69600.ckpt
+      4: /data/yhwang/projects/conul/logs/align-calibration/3en1i8yv/checkpoints/epoch=799-step=69600.ckpt
+  cifar100:
+    moco:
+      0: /data/yhwang/projects/conul/logs/align-calibration/7xow8bco/checkpoints/epoch=799-step=69600.ckpt
+      1: /data/yhwang/projects/conul/logs/align-calibration/198ijd3b/checkpoints/epoch=799-step=69600.ckpt
+      2: /data/yhwang/projects/conul/logs/align-calibration/q8jabyru/checkpoints/epoch=799-step=69600.ckpt
+      3: /data/yhwang/projects/conul/logs/align-calibration/gpmkae38/checkpoints/epoch=799-step=69600.ckpt
+      4: /data/yhwang/projects/conul/logs/align-calibration/28u2pbep/checkpoints/epoch=799-step=69600.ckpt
+    mocov1:
+      0: /data/yhwang/projects/conul/logs/align-calibration/i78wrvct/checkpoints/epoch=799-step=69600.ckpt
+      1: /data/yhwang/projects/conul/logs/align-calibration/vshu5fln/checkpoints/epoch=799-step=69600.ckpt
+      2: /data/yhwang/projects/conul/logs/align-calibration/hylr72hn/checkpoints/epoch=799-step=69600.ckpt
+      3: /data/yhwang/projects/conul/logs/align-calibration/4nkffwhx/checkpoints/epoch=799-step=69600.ckpt
+      4: /data/yhwang/projects/conul/logs/align-calibration/c8thn4dt/checkpoints/epoch=799-step=69600.ckpt
+    simclr:
+      0: /data/yhwang/projects/conul/logs/align-calibration/ewvragfr/checkpoints/epoch=799-step=69600.ckpt
+      1: /data/yhwang/projects/conul/logs/align-calibration/i0z6m777/checkpoints/epoch=799-step=69600.ckpt
+      2: /data/yhwang/projects/conul/logs/align-calibration/rtrdufyp/checkpoints/epoch=799-step=69600.ckpt
+      3: /data/yhwang/projects/conul/logs/align-calibration/xkrcd3ju/checkpoints/epoch=799-step=69600.ckpt
+      4: /data/yhwang/projects/conul/logs/align-calibration/1d470fg8/checkpoints/epoch=799-step=69600.ckpt
+  imagenet100:
+    simclr:
+      0: /data/yhwang/projects/conul/logs/align-calibration/sat8msg4/checkpoints/epoch=199-step=45600.ckpt
+      1: /data/yhwang/projects/conul/logs/align-calibration//checkpoints/epoch=199-step=45600.ckpt
+      2: /data/yhwang/projects/conul/logs/align-calibration//checkpoints/epoch=199-step=45600.ckpt
+
+rt:
+  imagenet100:
+    11700:
+      simclr:
+        0: /data/yhwang/projects/conul/logs/align-calibration/stnwuqtu/checkpoints/epoch=199-step=41000.ckpt
+        1: /data/yhwang/projects/conul/logs/align-calibration/4oky9rh0/checkpoints/epoch=199-step=41000.ckpt
+        2: /data/yhwang/projects/conul/logs/align-calibration/2n69unhu/checkpoints/epoch=199-step=41000.ckpt
+  cifar10:
+    4500:       
+      moco:
+        0: /data/yhwang/projects/conul/logs/align-calibration/dj02tazh/checkpoints/epoch=799-step=63200.ckpt
+        1: /data/yhwang/projects/conul/logs/align-calibration/xk9ml60i/checkpoints/epoch=799-step=63200.ckpt
+        2: /data/yhwang/projects/conul/logs/align-calibration/jrwkif2y/checkpoints/epoch=799-step=63200.ckpt
+        3: /data/yhwang/projects/conul/logs/align-calibration/9nq6hqan/checkpoints/epoch=799-step=63200.ckpt
+        4: /data/yhwang/projects/conul/logs/align-calibration/vin00z1k/checkpoints/epoch=799-step=63200.ckpt
+      simclr:
+        0: /data/yhwang/projects/conul/logs/align-calibration//checkpoints/epoch=799-step=63200.ckpt
+        1: /data/yhwang/projects/conul/logs/align-calibration//checkpoints/epoch=799-step=63200.ckpt
+        2: /data/yhwang/projects/conul/logs/align-calibration//checkpoints/epoch=799-step=63200.ckpt
+        3: /data/yhwang/projects/conul/logs/align-calibration//checkpoints/epoch=799-step=63200.ckpt
+        4: /data/yhwang/projects/conul/logs/align-calibration//checkpoints/epoch=799-step=63200.ckpt
+    22500:       
+      mocov1:
+        0: /data/yhwang/projects/conul/logs/align-calibration/3bztyxcm/checkpoints/epoch=799-step=34400.ckpt
+        1: /data/yhwang/projects/conul/logs/align-calibration/u1fzy4qv/checkpoints/epoch=799-step=34400.ckpt
+        2: /data/yhwang/projects/conul/logs/align-calibration/qzr9llrr/checkpoints/epoch=799-step=34400.ckpt
+        3: /data/yhwang/projects/conul/logs/align-calibration/086a1ozy/checkpoints/epoch=799-step=34400.ckpt
+        4: /data/yhwang/projects/conul/logs/align-calibration/rv4quijg/checkpoints/epoch=799-step=34400.ckpt
+      simclr:
+        0: /data/yhwang/projects/conul/logs/align-calibration/g3mgcovs/checkpoints/epoch=799-step=34400.ckpt
+        1: /data/yhwang/projects/conul/logs/align-calibration/b1ikaqnf/checkpoints/epoch=799-step=34400.ckpt
+        2: /data/yhwang/projects/conul/logs/align-calibration/z56o5eo1/checkpoints/epoch=799-step=34400.ckpt
+        3: /data/yhwang/projects/conul/logs/align-calibration/0uaarado/checkpoints/epoch=799-step=34400.ckpt
+        4: /data/yhwang/projects/conul/logs/align-calibration/6ecdlhsh/checkpoints/epoch=799-step=34400.ckpt  
+      moco:
+        0: /data/yhwang/projects/conul/logs/align-calibration/5pj0r4o8/checkpoints/epoch=799-step=34400.ckpt
+        1: /data/yhwang/projects/conul/logs/align-calibration/p58lz5iv/checkpoints/epoch=799-step=34400.ckpt
+        2: /data/yhwang/projects/conul/logs/align-calibration/r81yzk0x/checkpoints/epoch=799-step=34400.ckpt
+        3: /data/yhwang/projects/conul/logs/align-calibration/qtysl1qw/checkpoints/epoch=799-step=34400.ckpt
+        4: /data/yhwang/projects/conul/logs/align-calibration/1qbckqtc/checkpoints/epoch=799-step=34400.ckpt       
+  cifar100:
+    4500:       
+      moco:
+        0: /data/yhwang/projects/conul/logs/align-calibration/2oxu7ehq/checkpoints/epoch=799-step=63200.ckpt
+        1: /data/yhwang/projects/conul/logs/align-calibration/9z4v1ixy/checkpoints/epoch=799-step=63200.ckpt
+        2: /data/yhwang/projects/conul/logs/align-calibration/i5xt2rns/checkpoints/epoch=799-step=63200.ckpt
+        3: /data/yhwang/projects/conul/logs/align-calibration/ffes5tz4/checkpoints/epoch=799-step=63200.ckpt
+        4: /data/yhwang/projects/conul/logs/align-calibration/ls8itmki/checkpoints/epoch=799-step=63200.ckpt
+    22500:       
+      moco:
+        0: /data/yhwang/projects/conul/logs/align-calibration/yl6dhvjz/checkpoints/epoch=799-step=34400.ckpt
+        1: /data/yhwang/projects/conul/logs/align-calibration/b48k50h3/checkpoints/epoch=799-step=34400.ckpt
+        2: /data/yhwang/projects/conul/logs/align-calibration/6m3bp0ji/checkpoints/epoch=799-step=34400.ckpt
+        3: /data/yhwang/projects/conul/logs/align-calibration/baf1gj9d/checkpoints/epoch=799-step=34400.ckpt
+        4: /data/yhwang/projects/conul/logs/align-calibration/qvprfnvr/checkpoints/epoch=799-step=34400.ckpt
+opposite:
+  cifar10:
+    22500:       
+      mocov1:
+        0: /data/yhwang/projects/conul/logs/align-calibration/pgke55q3/checkpoints/epoch=799-step=34400.ckpt
+        1: /data/yhwang/projects/conul/logs/align-calibration/tpy4rk3i/checkpoints/epoch=799-step=34400.ckpt
+        2: /data/yhwang/projects/conul/logs/align-calibration/c04esnxx/checkpoints/epoch=799-step=34400.ckpt
+        3: /data/yhwang/projects/conul/logs/align-calibration/009m3gwk/checkpoints/epoch=799-step=34400.ckpt
+        4: /data/yhwang/projects/conul/logs/align-calibration/qx7ap6bd/checkpoints/epoch=799-step=34400.ckpt
+      simclr:
+        0: /data/yhwang/projects/conul/logs/align-calibration/afghgru5/checkpoints/epoch=799-step=34400.ckpt
+        1: /data/yhwang/projects/conul/logs/align-calibration/hlionyby/checkpoints/epoch=799-step=34400.ckpt
+        2: /data/yhwang/projects/conul/logs/align-calibration/or3a0gep/checkpoints/epoch=799-step=34400.ckpt
+        3: /data/yhwang/projects/conul/logs/align-calibration/1qkbw6xk/checkpoints/epoch=799-step=34400.ckpt
+        4: /data/yhwang/projects/conul/logs/align-calibration/hmyqvhzr/checkpoints/epoch=799-step=34400.ckpt         
+ac:
+  cifar10:
+    4500:       
+      moco:
+        0: /data/yhwang/projects/conul/logs/align-calibration/bto7wwiv/checkpoints/epoch=9-step=870.ckpt
+ft:
+  cifar10:
+    4500:       
+      moco:
+        0: /data/yhwang/projects/conul/logs/align-calibration/r3269cht/checkpoints/epoch=9-step=790.ckpt
+ablation:
+  cifar10:
+    4500:       
+      moco:
+        0: /data/yhwang/projects/conul/logs/align-calibration/q9n3f0st/checkpoints/epoch=9-step=870.ckpt
+ng:
+  cifar10:
+    4500:       
+      moco:
+        0: /data/yhwang/projects/conul/logs/align-calibration/z8vctdww/checkpoints/epoch=9-step=970.ckpt
+ga:
+  cifar10:
+    4500:       
+      moco:
+        0: /data/yhwang/projects/conul/logs/align-calibration/9v6cehl9/checkpoints/epoch=4-step=40.ckpt
+l1:
+  cifar10:
+    4500:       
+      moco:
+        0: /data/yhwang/projects/conul/logs/align-calibration/70rtd6m9/checkpoints/epoch=9-step=790.ckpt
+
+classifier:
+  pt:
+    cifar10:
+      moco:
+        0: /data/yhwang/projects/conul/logs/align-calibration/c6cv9o31/checkpoints/epoch=99-step=8700.ckpt
+        1: /data/yhwang/projects/conul/logs/align-calibration/092e1yri/checkpoints/epoch=99-step=8700.ckpt
+        2: /data/yhwang/projects/conul/logs/align-calibration/jdku7hm1/checkpoints/epoch=99-step=8700.ckpt
+        3: /data/yhwang/projects/conul/logs/align-calibration/2gah0c97/checkpoints/epoch=99-step=8700.ckpt
+        4: /data/yhwang/projects/conul/logs/align-calibration/vq7g67rj/checkpoints/epoch=99-step=8700.ckpt
+      simclr:
+        0: /data/yhwang/projects/conul/logs/align-calibration/o4ddjuc2/checkpoints/epoch=99-step=8700.ckpt
+        1: /data/yhwang/projects/conul/logs/align-calibration/a7070fmz/checkpoints/epoch=99-step=8700.ckpt
+        2: /data/yhwang/projects/conul/logs/align-calibration/bqwswlp7/checkpoints/epoch=99-step=8700.ckpt
+        3: /data/yhwang/projects/conul/logs/align-calibration/so63g6wk/checkpoints/epoch=99-step=8700.ckpt
+        4: /data/yhwang/projects/conul/logs/align-calibration/3en1i8yv/checkpoints/epoch=99-step=8700.ckpt
