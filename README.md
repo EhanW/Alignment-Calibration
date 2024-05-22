@@ -31,6 +31,21 @@ python pretrain.py \
 ```
 WandB logger will automatically save the final encoder as ```logs/alignment-calibration/xx/xx.ckpt ```.
 
+## Alignment Calibration
+```
+python main.py \
+    --dataset [cifar10/cifar100] \
+    --num-unlearn-samples 4500 \
+    --seed 0 \
+    --cl-alg [simclr/moco] \
+    [--enable-checkpointing] \
+    --cl-epochs 10 \
+    --cl-lr ${LR} \
+    [--l1-reg ${L1_REG}] \
+    --ckpt-path load_encoder_path.ckpt \
+    --alpha ${ALPHA} \
+    --beta ${BETA} \
+```
 
 
 

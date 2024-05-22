@@ -48,9 +48,9 @@ class SimCLRModel(LightningModule):
         self.projection_head = SimCLRProjectionHead(feature_dim, feature_dim, 128)
 
         self.mode = args.unlearn_mode
-        self.gamma = args.gamma
+        self.alpha = args.alpha
 
-        if self.mode == 'ng' or self.gamma is not None:
+        if self.mode == 'ng' or (self.alpha != 1 and self.alpha is not None):
             self.criterion = NTXentLossPlus(temperature=0.5, reduction='none')
         else:
             self.criterion = NTXentLossPlus(temperature=0.5)
@@ -60,10 +60,11 @@ class SimCLRModel(LightningModule):
         self.weight_decay = weight_decay
         self.momentum = momentum
         self.enable_scheduler = enable_scheduler
-        _, _, unlearn_indices = get_indices(
+        _, retain_indices, unlearn_indices = get_indices(
             seed=args.seed, num_total_samples=args.num_total_samples, num_unlearn_samples=args.num_unlearn_samples)
         self.unlearn_indices = unlearn_indices
-        self.alpha = args.alpha
+        self.beta = args.beta * len(unlearn_indices) / (len(retain_indices) + len(unlearn_indices))
+        print(self.beta)
         self.similarity = CosineSimilarity(dim=1, eps=1e-6)  
         self.l1_reg = args.l1_reg
 
@@ -86,10 +87,10 @@ class SimCLRModel(LightningModule):
             rbi = (~unlearn_batch_indices).repeat(2)
             loss = (loss[rbi].sum() - loss[ubi].sum())/len(loss)
 
-        if self.gamma is not None:
+        if (self.alpha != 1 and self.alpha is not None):
             ubi = unlearn_batch_indices.repeat(2)
             rbi = (~unlearn_batch_indices).repeat(2)
-            loss = (loss[rbi].sum() + self.gamma*loss[ubi].sum())/(rbi.sum()+self.gamma*ubi.sum())
+            loss = (loss[rbi].sum() + self.alpha*loss[ubi].sum())/(rbi.sum()+self.alpha*ubi.sum())
 
 
         self.log("info_nce_loss", loss, on_step=True)
@@ -101,15 +102,14 @@ class SimCLRModel(LightningModule):
         if self.negative_loss:
             loss = -loss
 
-        if len(data) == 3 and (self.alpha > 0 or self.beta > 0):
+        if len(data) == 3 and self.beta > 0 :
             x2 = data[2]
             z2 = self.forward(x2)
-            if self.alpha > 0:
-                a = z0[unlearn_batch_indices]
-                b = z2[unlearn_batch_indices]
-                loss_unlearn = self.similarity(a, b).mean()
-                loss += self.alpha*loss_unlearn
-                self.log("unlearn_pos_sim_loss", loss_unlearn, on_step=True)
+            a = z0[unlearn_batch_indices]
+            b = z2[unlearn_batch_indices]
+            loss_unlearn = self.similarity(a, b).mean()
+            loss += self.beta*loss_unlearn
+            self.log("unlearn_pos_sim_loss", loss_unlearn, on_step=True)
         self.log("train_loss", loss, on_step=True)
         return loss
 
@@ -144,8 +144,8 @@ class MocoModel(LightningModule):
 
         # create our loss with the optional memory bank
         self.mode = args.unlearn_mode
-        self.gamma = args.gamma
-        if self.mode == 'ng' or self.gamma is not None:
+        self.alpha = args.alpha
+        if self.mode == 'ng' or (self.alpha != 1 and self.alpha is not None):
             self.criterion = NTXentLossPlus(
                 temperature=temperature, memory_bank_size=(4096, 128), reduction='none'
             )
@@ -160,10 +160,10 @@ class MocoModel(LightningModule):
         self.momentum = momentum
         self.enable_scheduler = enable_scheduler
 
-        _, _, unlearn_indices = get_indices(
+        _, retain_indices, unlearn_indices = get_indices(
                 seed=args.seed, num_total_samples=args.num_total_samples, num_unlearn_samples=args.num_unlearn_samples)
         self.unlearn_indices = unlearn_indices
-        self.alpha = args.alpha
+        self.beta = args.beta * len(unlearn_indices) / (len(retain_indices) + len(unlearn_indices))
         self.similarity = CosineSimilarity(dim=1, eps=1e-6)  
         self.l1_reg = args.l1_reg
 
@@ -197,10 +197,10 @@ class MocoModel(LightningModule):
         if self.mode == 'ng':
             loss = (loss[~unlearn_batch_indices].sum() - loss[unlearn_batch_indices].sum())/len(loss)
 
-        if self.gamma is not None:
+        if self.alpha != 1 and self.alpha is not None:
             ubi = unlearn_batch_indices
             rbi = (~unlearn_batch_indices)
-            loss = (loss[rbi].sum() + self.gamma*loss[ubi].sum())/(rbi.sum()+self.gamma*ubi.sum())
+            loss = (loss[rbi].sum() + self.alpha*loss[ubi].sum())/(rbi.sum()+self.alpha*ubi.sum())
 
         self.log("info_nce_loss", loss, on_step=True)  
         if self.l1_reg is not None:
@@ -210,7 +210,7 @@ class MocoModel(LightningModule):
         if self.negative_loss:
             loss = -loss
 
-        if len(data) == 3 and (self.alpha > 0 or self.beta > 0):
+        if len(data) == 3 and self.beta > 0 :
             x_k2 = data[2]
             # get keys k_t_1(x') and k_t_2(x)
             k2, shuffle = batch_shuffle(x_k2)
@@ -218,11 +218,11 @@ class MocoModel(LightningModule):
             k2 = self.projection_head_momentum(k2)
             k2 = batch_unshuffle(k2, shuffle)
             # loss = self.criterion(q_t_1(x), k_t_1(x')) - cosinesim(q_t_1(x), k_t_2(x))
-            if self.alpha > 0:
+            if self.beta > 0:
                 a = q[unlearn_batch_indices]
                 b = k2[unlearn_batch_indices]
                 loss_unlearn = self.similarity(a, b).mean()
-                loss += self.alpha*loss_unlearn
+                loss += self.beta*loss_unlearn
                 self.log("unlearn_pos_sim_loss", loss_unlearn, on_step=True)
         self.log("train_loss_ssl", loss, on_step=True)
         return loss

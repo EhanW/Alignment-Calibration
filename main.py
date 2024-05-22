@@ -16,14 +16,14 @@ from utils import get_indices, get_cl_augs, get_sl_augs, get_test_augs, cls_test
 
 def get_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--unlearn-mode', '-m', default='ours_reg')
+    parser.add_argument('--unlearn-mode', '-m', default='ac')
     parser.add_argument('--num-unlearn-samples', '-n', type=int, default=4500)
     parser.add_argument('--project', '-p', type=str, default='alignment-calibration')
     parser.add_argument('--log-model', '-l', action='store_true')    
     parser.add_argument('--backbone', '-b', default='resnet18', choices=['resnet18', 'resnet50']) 
 
     parser.add_argument('--cl-alg', '-a', choices=['moco', 'simclr'], default='moco')
-    parser.add_argument('--cl-epochs', type=int, default=40)
+    parser.add_argument('--cl-epochs', type=int, default=10)
     parser.add_argument('--cl-lr', type=float, default=0.06)
     parser.add_argument('--cl-momentum', type=float, default=0.9)
     parser.add_argument('--cl-weight-decay', type=float, default=5e-4)
@@ -50,11 +50,9 @@ def get_args():
     parser.add_argument('--enable-scheduler', action='store_true', default=False)
 
     parser.add_argument('--strength', type=float, default=1.0)
-    parser.add_argument('--strength-1', type=float, default=1.0)
-    parser.add_argument('--strength-2', type=float, default=None)
-    parser.add_argument('--index-shift', type=int, default=None)
-    parser.add_argument('--alpha', type=float, required=True, default=0.0, help='regularization parameter for the unlearning loss')
-    parser.add_argument('--gamma', type=float, default=None)
+    parser.add_argument('--index-shift', type=int, default=0, help='apply negative alignment calibration, 0 means randomly construct negative pairs, otherwise shift the index')
+    parser.add_argument('--alpha', type=float, default=1, help='the hyper parameter alpha and gamma (alpha=gamma) in paper that controls negative calibration; default is alpha=gamma=1')
+    parser.add_argument('--beta', type=float, default=0, help='the hyper parameter beta in paper that controls positive calibration')
     
     parser.add_argument('--l1-reg', type=float, default=None)
     parser.add_argument('--precision', type=int, default=None)
@@ -165,6 +163,7 @@ def make_emia_features(model):
     evaluation_features = OrderedDict(unlearn=evaluation_unlearn_features)
     return train_features, evaluation_features
 
+
 def main():
     ## make dataloaders and models
     train_dataloaders, evaluation_dataloaders, train_cmia_dataloader = make_dataloaders()
@@ -177,9 +176,9 @@ def main():
         raise ValueError("Invalid value for cl-alg")
         
     ## load the pretrained checkpoint
-    with open('ckpt_paths.yml', 'r') as f:
-        ckpt_path = yaml.load(f, Loader=yaml.FullLoader)['pt'][args.dataset][args.cl_alg][args.seed]
-    state_dict = torch.load(ckpt_path, map_location='cpu')['state_dict']
+    # with open('ckpt_paths.yml', 'r') as f:
+    #     ckpt_path = yaml.load(f, Loader=yaml.FullLoader)['pt'][args.dataset][args.cl_alg][args.seed]
+    state_dict = torch.load(args.ckpt_path, map_location='cpu')['state_dict']
     model.load_state_dict(state_dict)
 
     ## configure the logger
@@ -248,7 +247,6 @@ def main():
     results.append(CMIA_acc)
     time_results.append(time() - start_time)
     start_time = time()
-    print(columns, results)
     wandb_logger.log_text(key="evluation", columns=columns, data=[results])
     wandb_logger.log_text(key="time", columns=time_columns, data=[time_results])
 

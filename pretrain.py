@@ -42,9 +42,9 @@ def get_args():
     parser.add_argument('--gpu-id', '-g', type=int, default=0, help='the gpu id')
     parser.add_argument('--seed', '-s', type=int, default=0)
 
-    parser.add_argument('--alpha', type=float, default=0.0, help='regularization parameter for the unlearning loss')
-    parser.add_argument('--gamma', type=float, default=None)
-    
+    parser.add_argument('--alpha', type=float, default=None, help='the hyper parameter alpha and gamma (alpha=gamma) in paper that controls negative calibration')
+    parser.add_argument('--beta', type=float, default=0, help='the hyper parameter beta in paper that controls positive calibration')
+
     parser.add_argument('--l1-reg', type=float, default=None)
     parser.add_argument('--precision', type=int, default=None) 
     return parser.parse_args()

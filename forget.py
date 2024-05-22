@@ -50,12 +50,13 @@ def get_args():
     parser.add_argument('--enable-checkpointing', action='store_true', default=False)
     parser.add_argument('--enable-scheduler', action='store_true', default=False)
 
-    parser.add_argument('--alpha', type=float, default=0.0, help='regularization parameter for the unlearning loss')
-    parser.add_argument('--gamma', type=float, default=None)
+    parser.add_argument('--alpha', type=float, default=None, help='the hyper parameter alpha and gamma (alpha=gamma) in paper that controls negative calibration')
+    parser.add_argument('--beta', type=float, default=0, help='the hyper parameter beta in paper that controls positive calibration')
 
     parser.add_argument('--l1-reg', type=float, default=None)
     parser.add_argument('--precision', type=int, default=None)
     parser.add_argument('--no-eval', action='store_true', default=False)
+    parser.add_argument('--ckpt-path', type=str, default=None)
     return parser.parse_args()
 
 
@@ -72,8 +73,6 @@ def make_dataloaders():
     ### Get the indices for the dataset
     validation_indices, retain_indices, unlearn_indices = get_indices(
             seed=args.seed, num_total_samples=args.num_total_samples, num_unlearn_samples=args.num_unlearn_samples)
-    print(args.num_total_samples, args.num_unlearn_samples)
-    print(len(validation_indices), len(retain_indices), len(unlearn_indices))
     if args.dataset == 'cifar10':
         DatasetTriad = CIFAR10Triad
     elif args.dataset == 'cifar100':
@@ -188,9 +187,9 @@ def main():
 
     ## load the pretrained checkpoint
     if args.unlearn_mode != 'rt':
-        with open('ckpt_paths.yml', 'r') as f:
-            ckpt_path = yaml.load(f, Loader=yaml.FullLoader)['pt'][args.dataset][args.cl_alg][args.seed]
-        state_dict = torch.load(ckpt_path, map_location='cpu')['state_dict']
+        # with open('ckpt_paths.yml', 'r') as f:
+        #     ckpt_path = yaml.load(f, Loader=yaml.FullLoader)['pt'][args.dataset][args.cl_alg][args.seed]
+        state_dict = torch.load(args.ckpt_path, map_location='cpu')['state_dict']
         model.load_state_dict(state_dict)
 
     ## configure the logger
