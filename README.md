@@ -1,5 +1,5 @@
 # Alignment Calibration
-This is the PyTorch implementation of the paper "Alignment Calibration: Machine Unlearning for Contrastive Learning under Auditing" which is under review for NeurIPS 2024.
+This is the PyTorch implementation of the paper "Alignment Calibration: Machine Unlearning for Contrastive Learning under Auditing" which is under review.
 This code can reproduce the results of baseline unlearning methods and our proposed Alignment Calibration (AC) on CIFAR-10/100 in our paper.
 
 ## Prerequisites
